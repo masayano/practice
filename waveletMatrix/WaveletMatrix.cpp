@@ -164,7 +164,7 @@ int WaveletMatrix::rank(
 
 int select_linear(
         const std::vector<int>& vec,
-        const int idx,
+        const int num,
         const int bit) {
     //本当はここを完備辞書でやらないと意味が全くないが簡単のためサボる
     int count = 0;
@@ -173,33 +173,34 @@ int select_linear(
         if(vec[i] == bit) {
             ++count;
         }
-        if(idx == count) {
+        if(num == count) {
             return (i + 1);
         }
     }
     return -1;
 }
 
-int WaveletMatrix::select(const int val, const int num) const {
+int WaveletMatrix::select(const int val, const int n) const {
     const std::map<int,int>::const_iterator it = startIdxList.find(val);
-    if((num == 0) || (it == startIdxList.end())) {
+    if((n == 0) || (it == startIdxList.end())) {
         return -1;
     } else {
-        int idx = (*it).second + num;
+        int idx = (*it).second + n;
         const int max = bitsNum - 1;
         for(int i = 0; i < bitsNum; ++i) {
             const int mask = (1 << i);
             int bit;
+            int num = idx;
             const int col = max - i;
             if((val & mask) == 0) {
                 bit = 0;
             } else {
                 bit = 1;
-                idx -= zeroNumberArray[col];
+                num -= zeroNumberArray[col];
             }
             const std::vector<int>& vec = bitMatrix[col];
-            if((idx > -1) && (idx <= vec.size())) {
-                idx = select_linear(vec, idx, bit);
+            if((num > -1) && (num <= vec.size())) {
+                idx = select_linear(vec, num, bit);
                 //std::cout << idx << std::endl;
             } else {
                 return -1;
