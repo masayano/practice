@@ -183,7 +183,7 @@ int select_linear(
 int WaveletMatrix::select(const int val, const int n) const {
     const std::map<int,int>::const_iterator it = startIdxList.find(val);
     if((n == 0) || (it == startIdxList.end())) {
-        return -1;
+        return 0;
     } else {
         int idx = (*it).second + n;
         const int max = bitsNum - 1;
@@ -203,7 +203,7 @@ int WaveletMatrix::select(const int val, const int n) const {
                 idx = select_linear(vec, num, bit);
                 //std::cout << idx << std::endl;
             } else {
-                return -1;
+                return 0;
             }
         }
         return idx;
