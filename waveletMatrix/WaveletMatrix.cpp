@@ -158,7 +158,7 @@ int WaveletMatrix::rank(
     if(it != startIdxList.end()) {
         return (tmpIdx - (*it).second);
     } else {
-        return -1;
+        return 0;
     }
 }
 
