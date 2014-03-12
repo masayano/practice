@@ -16,14 +16,13 @@ void alloc(
     zeroNumberArray.resize(bitsNum);
 }
 
-int create(
+void createMatrixAndArray(
         const std::vector<int>& array,
         const int bitsNum,
         const int length,
         std::vector<std::vector<int> >& bitMatrix,
         std::vector<int>& zeroNumberArray,
-        std::map<int, int>& startIdxList) {
-    std::vector<int> tmpArray = array;
+        std::vector<int>& tmpArray) {
     const int max = bitsNum - 1;
     for(int i = 0; i < bitsNum; ++i) {
         const int mask = (1 << (max - i));
@@ -49,16 +48,43 @@ int create(
         tmpArray = tmpArray_zero;
         zeroNumberArray[i] = count;
     }
-    int oldNum = tmpArray[0];
+}
+
+void createStartIdxList(
+        const std::vector<int>& array,
+        const int length,
+        std::map<int,int>& startIdxList) {
+    int oldNum = array[0];
     int newNum;
     startIdxList.insert(std::make_pair(oldNum, 0));
     for(int i = 1; i < length; ++i) {
-        newNum = tmpArray[i];
+        newNum = array[i];
         if(oldNum != newNum) {
             startIdxList.insert(std::make_pair(newNum, i));
             oldNum = newNum;
         }
     }
+}
+
+void create(
+        const std::vector<int>& array,
+        const int bitsNum,
+        const int length,
+        std::vector<std::vector<int> >& bitMatrix,
+        std::vector<int>& zeroNumberArray,
+        std::map<int, int>& startIdxList) {
+    std::vector<int> tmpArray = array;
+    createMatrixAndArray(
+            array,
+            bitsNum,
+            length,
+            bitMatrix,
+            zeroNumberArray,
+            tmpArray);
+    createStartIdxList(
+            tmpArray,
+            length,
+            startIdxList);
 }
 
 WaveletMatrix::WaveletMatrix(const std::vector<int>& array)
