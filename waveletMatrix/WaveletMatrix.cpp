@@ -198,7 +198,7 @@ int WaveletMatrix::select(const int val, const int num) const {
                 idx -= zeroNumberArray[col];
             }
             const std::vector<int>& vec = bitMatrix[col];
-            if((idx > -1) && (idx < vec.size())) {
+            if((idx > -1) && (idx <= vec.size())) {
                 idx = select_linear(vec, idx, bit);
                 //std::cout << idx << std::endl;
             } else {
