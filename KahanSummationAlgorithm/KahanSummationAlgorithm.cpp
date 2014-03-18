@@ -5,7 +5,7 @@
 
 typedef float FLOATING_POINT_TYPE;
 const int arraySize = 10000000;
-const float value   = 1.23456;
+const FLOATING_POINT_TYPE value   = 1.23456;
 
 std::vector<FLOATING_POINT_TYPE> makeArray() {
     std::vector<FLOATING_POINT_TYPE> array(arraySize, value);
