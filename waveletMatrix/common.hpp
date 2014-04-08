@@ -1,8 +1,8 @@
-#ifndef COMMON_HPP_
-#define COMMON_HPP_
+#pragma once
 
 #include <vector>
 
-void printArray(const std::vector<int>& array);
+typedef std::size_t SIZE_T;
+typedef int VALUE;
 
-#endif
+void printArray(const std::vector<VALUE>& array);

@@ -5,33 +5,33 @@
 #include "common.hpp"
 
 void alloc(
-        const int bitsNum,
-        const int length,
-        std::vector<std::vector<int> >& bitMatrix,
-        std::vector<int>& zeroNumberArray) {
+        const SIZE_T bitsNum,
+        const SIZE_T length,
+        std::vector<std::vector<SIZE_T> >& bitMatrix,
+        std::vector<SIZE_T>& zeroNumberArray) {
     bitMatrix.resize(bitsNum);
-    for(int i = 0; i < bitsNum; ++i) {
-        bitMatrix[i].resize(length);
+    for(auto& bitLine : bitMatrix) {
+        bitLine.resize(length);
     }
     zeroNumberArray.resize(bitsNum);
 }
 
 void createMatrixAndArray(
-        const std::vector<int>& array,
-        const int bitsNum,
-        const int length,
-        std::vector<std::vector<int> >& bitMatrix,
-        std::vector<int>& zeroNumberArray,
-        std::vector<int>& tmpArray) {
-    const int max = bitsNum - 1;
-    for(int i = 0; i < bitsNum; ++i) {
-        const int mask = (1 << (max - i));
+        const std::vector<VALUE>& array,
+        const SIZE_T bitsNum,
+        const SIZE_T length,
+        std::vector<std::vector<SIZE_T> >& bitMatrix,
+        std::vector<SIZE_T>& zeroNumberArray,
+        std::vector<VALUE>& tmpArray) {
+    const auto max = bitsNum - 1;
+    for(auto i = 0U; i < bitsNum; ++i) {
+        const auto mask = (1U << (max - i));
         //std::cout << mask << std::endl;
-        int count = 0;
-        std::vector<int> tmpArray_zero;
-        std::vector<int> tmpArray_one;
-        for(int j = 0; j < length; ++j) {
-            const int element = tmpArray[j];
+        auto count = 0U;
+        std::vector<VALUE> tmpArray_zero;
+        std::vector<VALUE> tmpArray_one;
+        for(auto j = 0U; j < length; ++j) {
+            const auto& element = tmpArray[j];
             if((element & mask) == 0) {
                 ++count;
                 bitMatrix[i][j] = 0;
@@ -42,22 +42,22 @@ void createMatrixAndArray(
             }
         }
         tmpArray_zero.insert(
-                tmpArray_zero.end(),
-                tmpArray_one.begin(),
-                tmpArray_one.end());
+                end(tmpArray_zero),
+                begin(tmpArray_one),
+                end  (tmpArray_one));
         tmpArray = tmpArray_zero;
         zeroNumberArray[i] = count;
     }
 }
 
 void createStartIdxList(
-        const std::vector<int>& array,
-        const int length,
-        std::map<int,int>& startIdxList) {
-    int oldNum = array[0];
-    int newNum;
+        const std::vector<VALUE>& array,
+        const SIZE_T length,
+        std::map<SIZE_T, SIZE_T>& startIdxList) {
+    auto oldNum = array[0];
+    VALUE newNum;
     startIdxList.insert(std::make_pair(oldNum, 0));
-    for(int i = 1; i < length; ++i) {
+    for(auto i = 1U; i < length; ++i) {
         newNum = array[i];
         if(oldNum != newNum) {
             startIdxList.insert(std::make_pair(newNum, i));
@@ -67,13 +67,13 @@ void createStartIdxList(
 }
 
 void create(
-        const std::vector<int>& array,
-        const int bitsNum,
-        const int length,
-        std::vector<std::vector<int> >& bitMatrix,
-        std::vector<int>& zeroNumberArray,
-        std::map<int, int>& startIdxList) {
-    std::vector<int> tmpArray = array;
+        const std::vector<VALUE>& array,
+        const SIZE_T bitsNum,
+        const SIZE_T length,
+        std::vector<std::vector<SIZE_T> >& bitMatrix,
+        std::vector<SIZE_T>& zeroNumberArray,
+        std::map<SIZE_T, SIZE_T>& startIdxList) {
+    auto tmpArray = array;
     createMatrixAndArray(
             array,
             bitsNum,
@@ -87,8 +87,8 @@ void create(
             startIdxList);
 }
 
-WaveletMatrix::WaveletMatrix(const std::vector<int>& array)
-        : bitsNum(sizeof(int) * 8), length(array.size()) {
+WaveletMatrix::WaveletMatrix(const std::vector<VALUE>& array)
+        : bitsNum(sizeof(SIZE_T) * 8), length(array.size()) {
     alloc(
             bitsNum,
             length,
@@ -103,13 +103,13 @@ WaveletMatrix::WaveletMatrix(const std::vector<int>& array)
             startIdxList);
 }
 
-int rank_linear(
-        const std::vector<int>& vec,
-        const int idx,
-        const int bit) {
+SIZE_T rank_linear(
+        const std::vector<SIZE_T>& vec,
+        const SIZE_T idx,
+        const SIZE_T bit) {
     //本当はここを完備辞書でやらないと意味が全くないが簡単のためサボる
-    int count = 0;
-    for(int i = 0; i < idx; ++i) {
+    auto count = 0;
+    for(auto i = 0U; i < idx; ++i) {
         if(vec[i] == bit) {
             ++count;
         }
@@ -117,12 +117,12 @@ int rank_linear(
     return count;
 }
 
-int WaveletMatrix::access(const int idx) const {
-    int num = 0;
-    int bit = 0;
-    int tmpIdx = idx;
-    for(int i = 0; i < bitsNum; ++i) {
-        const std::vector<int>& vector = bitMatrix[i];
+SIZE_T WaveletMatrix::access(const SIZE_T idx) const {
+    auto num = 0U;
+    auto bit = 0U;
+    auto tmpIdx = idx;
+    for(auto i = 0U; i < bitsNum; ++i) {
+        const auto& vector = bitMatrix[i];
         bit = vector[tmpIdx];
         tmpIdx = rank_linear(vector, tmpIdx, bit);
         if(bit == 1) {
@@ -134,28 +134,28 @@ int WaveletMatrix::access(const int idx) const {
     return num;
 }
 
-int WaveletMatrix::rank(
-        const int idx,
-        const int val) const {
-    const int max = bitsNum - 1;
-    int tmpIdx = idx;
-    for(int i = 0; i < bitsNum; ++i) {
-        int bit;
-        const int mask = (1 << (max - i));
+SIZE_T WaveletMatrix::rank(
+        const SIZE_T idx,
+        const SIZE_T val) const {
+    const SIZE_T max = bitsNum - 1;
+    auto tmpIdx = idx;
+    for(auto i = 0U; i < bitsNum; ++i) {
+        SIZE_T bit;
+        const auto mask = (1 << (max - i));
         if((val & mask) == 0) {
             bit = 0;
         } else {
             bit = 1;
         }
-        const std::vector<int>& vec = bitMatrix[i];
+        const auto& vec = bitMatrix[i];
         tmpIdx = rank_linear(vec, tmpIdx, bit);
         if(bit == 1) {
             tmpIdx += zeroNumberArray[i];
         }
         //std::cout << tmpIdx << ", " << bit << std::endl;
     }
-    const std::map<int,int>::const_iterator it = startIdxList.find(val);
-    if(it != startIdxList.end()) {
+    const auto it = startIdxList.find(val);
+    if(it != end(startIdxList)) {
         return (tmpIdx - (*it).second);
     } else {
         return 0;
@@ -163,13 +163,13 @@ int WaveletMatrix::rank(
 }
 
 int select_linear(
-        const std::vector<int>& vec,
-        const int num,
-        const int bit) {
+        const std::vector<SIZE_T>& vec,
+        const SIZE_T num,
+        const SIZE_T bit) {
     //本当はここを完備辞書でやらないと意味が全くないが簡単のためサボる
-    int count = 0;
-    const int length = vec.size();
-    for(int i = 0; i < length; ++i) {
+    auto count = 0U;
+    const auto length = vec.size();
+    for(auto i = 0U; i < length; ++i) {
         if(vec[i] == bit) {
             ++count;
         }
@@ -180,30 +180,30 @@ int select_linear(
     return -1;
 }
 
-int WaveletMatrix::select(const int val, const int n) const {
-    const std::map<int,int>::const_iterator it = startIdxList.find(val);
-    if((n == 0) || (it == startIdxList.end())) {
-        return 0;
+int WaveletMatrix::select(const SIZE_T val, const SIZE_T n) const {
+    const auto it = startIdxList.find(val);
+    if((n == 0) || (it == end(startIdxList))) {
+        return -1;
     } else {
-        int idx = (*it).second + n;
-        const int max = bitsNum - 1;
-        for(int i = 0; i < bitsNum; ++i) {
-            const int mask = (1 << i);
-            int bit;
+        auto idx = (*it).second + n;
+        const SIZE_T max = bitsNum - 1;
+        for(auto i = 0U; i < bitsNum; ++i) {
+            const auto mask = (1 << i);
+            SIZE_T bit;
             int num = idx;
-            const int col = max - i;
+            const SIZE_T col = max - i;
             if((val & mask) == 0) {
                 bit = 0;
             } else {
                 bit = 1;
                 num -= zeroNumberArray[col];
             }
-            const std::vector<int>& vec = bitMatrix[col];
-            if((num > -1) && (num <= vec.size())) {
+            const auto& vec = bitMatrix[col];
+            if((num > -1) && (num <= static_cast<int>(vec.size()))) {
                 idx = select_linear(vec, num, bit);
                 //std::cout << idx << std::endl;
             } else {
-                return 0;
+                return -1;
             }
         }
         return idx;
@@ -211,14 +211,14 @@ int WaveletMatrix::select(const int val, const int n) const {
 }
 
 void WaveletMatrix::print() const {
-    for(int i = 0; i < bitsNum; ++i) {
-        for(int j = 0; j < length; ++j) {
+    for(auto i = 0U; i < bitsNum; ++i) {
+        for(auto j = 0U; j < length; ++j) {
             std::cout << bitMatrix[i][j] << " ";
         }
         std::cout << ". zero num: " << zeroNumberArray[i] << std::endl;
     }
     std::cout << "Start idx list : " << std::endl;
-    for(std::map<int,int>::const_iterator it = startIdxList.begin(); it != startIdxList.end(); ++it) {
-        std::cout << (*it).first << ":" << (*it).second << std::endl;
+    for(const auto& startIdx : startIdxList) {
+        std::cout << startIdx.first << ":" << startIdx.second << std::endl;
     }
 }
