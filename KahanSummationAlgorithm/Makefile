@@ -1,7 +1,8 @@
 # マクロ定義部
-CC      = g++
-OBJS    = KahanSummationAlgorithm.o
-LIBS    = -lboost_timer -lboost_system
+CC       = g++
+OBJS     = KahanSummationAlgorithm.o
+LIBS     = -lboost_timer -lboost_system
+CPPFLAGS = -Wall -std=c++11
 
 # 生成規則部
 KahanSummationAlgorithm: $(OBJS)
@@ -13,4 +14,4 @@ KahanSummationAlgorithm: $(OBJS)
 KahanSummationAlgorithm.o: KahanSummationAlgorithm.cpp
 
 clean:
-	rm *.o KahanSummationAlgorithm
+	rm *.o KahanSummationAlgorithm *~

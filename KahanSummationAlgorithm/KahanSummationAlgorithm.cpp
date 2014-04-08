@@ -16,10 +16,8 @@ void simpleSummation(const std::vector<FLOATING_POINT_TYPE>& array) {
     std::cout << "Simple summation: ";
     boost::timer::cpu_timer timer;
     FLOATING_POINT_TYPE summation = 0;
-    for    (std::vector<FLOATING_POINT_TYPE>::const_iterator it = array.begin();
-            it != array.end();
-            ++it) {
-        summation += (*it);
+    for(const auto& val : array) {
+        summation += val;
     }
     std::cout << summation;
     std::cout << ", time: " << timer.format() << std::endl;
@@ -30,10 +28,8 @@ void kahanSummation(const std::vector<FLOATING_POINT_TYPE>& array) {
     boost::timer::cpu_timer timer;
     FLOATING_POINT_TYPE summation  = 0;
     FLOATING_POINT_TYPE compliment = 0;
-    for    (std::vector<FLOATING_POINT_TYPE>::const_iterator it = array.begin();
-            it != array.end();
-            ++it) {
-        const FLOATING_POINT_TYPE y = (*it) - compliment;
+    for(const auto& val : array) {
+        const FLOATING_POINT_TYPE y = val - compliment;
         const FLOATING_POINT_TYPE t = summation + y;
         compliment = (t - summation) - y;
         summation  = t;
