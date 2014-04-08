@@ -5,51 +5,49 @@
 #include <iomanip>
 
 template <class T> void recordBlock(
-        const int count,
+        const SIZE_T count,
         std::vector<T>& blockArray,
-        int& blockIdx) {
+        SIZE_T& blockIdx) {
     blockArray[blockIdx] = count;
     ++blockIdx;
 }
 
 void printBlockArray(
-        const std::vector<int>& bigBlockArray,
+        const std::vector<SIZE_T>& bigBlockArray,
         const std::vector<SMALL_BLOCK_RECORD_TYPE>& smallBlockArray) {
-    const int bigLength = bigBlockArray.size();
     std::cout << "Big block array: ";
-    for(int i = 0; i < bigLength; ++i) {
-        std::cout << bigBlockArray[i] << " ";
+    for(const auto& bigBlock : bigBlockArray) {
+        std::cout << bigBlock << " ";
     }
     std::cout << std::endl;
-    const int smallLength = smallBlockArray.size();
     std::cout << "Small block array: ";
-    for(int i = 0; i < smallLength; ++i) {
-        std::cout << static_cast<int>(smallBlockArray[i]) << " ";
+    for(const auto& smallBlock : smallBlockArray) {
+        std::cout << static_cast<std::size_t>(smallBlock) << " ";
     }
     std::cout << std::endl;
 }
 
 void scanning(
         const std::vector<BIT_CONTAINER_TYPE>& bits,
-        std::vector<int>& bigBlockArray,
+        std::vector<SIZE_T>& bigBlockArray,
         std::vector<SMALL_BLOCK_RECORD_TYPE>& smallBlockArray,
-        const int intBitsLength,
-        const int vectorSize,
-        const int bigBlockSize,
-        const int smallBlockSize) {
-    int global_idx    = 0;
-    int local_idx     = 0;
-    int global_count  = 0;
-    int local_count   = 0;
-    int bigBlockIdx   = 0;
-    int smallBlockIdx = 0;
+        const SIZE_T intBitsLength,
+        const SIZE_T vectorSize,
+        const SIZE_T bigBlockSize,
+        const SIZE_T smallBlockSize) {
+    auto global_idx    = 0U;
+    auto local_idx     = 0U;
+    auto global_count  = 0U;
+    auto local_count   = 0U;
+    auto bigBlockIdx   = 0U;
+    auto smallBlockIdx = 0U;
     recordBlock(global_count, bigBlockArray,   bigBlockIdx);
     recordBlock(local_count,  smallBlockArray, smallBlockIdx);
-    const int maxShift = intBitsLength - 1;
-    for(int i = 0; i < vectorSize; ++i) {
-        for(int j = 0; j < intBitsLength; ++j) {
+    const auto maxShift = intBitsLength - 1;
+    for(const auto& bit : bits) {
+        for(auto i = 0U; i < intBitsLength; ++i) {
             //std::cout << global_idx << ":" << bigBlockArray[bigBlockIdx-1] << ":" << smallBlockArray[smallBlockIdx-1] << std::endl;
-            if(bits[i] & (1 << (maxShift - j))) {
+            if(bit & (1 << (maxShift - i))) {
                 ++global_count;
                 ++local_count;
             }
@@ -69,13 +67,13 @@ void scanning(
 }
 
 void makeTailTable(
-        const int smallBlockSize,
+        const SIZE_T smallBlockSize,
         std::vector<TAIL_TABLE_RECORD_TYPE>& tailTable) {
-    const int tableSize = (1 << smallBlockSize);
+    const auto tableSize = (1U << smallBlockSize);
     tailTable.resize(tableSize);
-    for(int i = 0; i < tableSize; ++i) {
-        int count = 0;
-        for(int j = 0; j < smallBlockSize; ++j) {
+    for(auto i = 0U; i < tableSize; ++i) {
+        TAIL_TABLE_RECORD_TYPE count = 0;
+        for(auto j = 0U; j < smallBlockSize; ++j) {
             if((i & (1 << j)) != 0) {
               ++count;
             }
@@ -85,11 +83,11 @@ void makeTailTable(
 }
 
 void printTailTable(
-        const int smallBlockSize,
+        const SIZE_T smallBlockSize,
         const std::vector<TAIL_TABLE_RECORD_TYPE>& tailTable) {
-    const int tableSize = tailTable.size();
+    const SIZE_T tableSize = tailTable.size();
     std::cout << "Small block table: " << std::endl;
-    for(int i = 0; i < tableSize; ++i) {
+    for(auto i = 0U; i < tableSize; ++i) {
         std::cout << "[" << std::setw(2) << std::setfill('0') << i << "] ";
         for(int j = (smallBlockSize - 1); j >= 0; --j) {
             if((i & (1 << j)) != 0) {
@@ -98,17 +96,17 @@ void printTailTable(
                 std::cout << 0;
             }
         }
-        std::cout << " : " << static_cast<int>(tailTable[i]) << std::endl;
+        std::cout << " : " << static_cast<SIZE_T>(tailTable[i]) << std::endl;
     }
 }
 
 void blockIdx(
-        const int idx,
-        const int bigBlockSize,
-        const int smallBlockSize,
-        const int smallBlock_per_bigBlock,
-        int& bigBlockIdx,
-        int& smallBlockIdx) {
+        const SIZE_T idx,
+        const SIZE_T bigBlockSize,
+        const SIZE_T smallBlockSize,
+        const SIZE_T smallBlock_per_bigBlock,
+        SIZE_T& bigBlockIdx,
+        SIZE_T& smallBlockIdx) {
     //
     //       0                18                36                54                72           85
     //       0   4   8   12  16   22  26  30  34    40  44  48  52    58  62  66  70    76  80  84
@@ -119,26 +117,26 @@ void blockIdx(
     //      [0] [1] [2] [3] [4]                [10][11][12][13][14]                [20][21][22][23]
     //                        [5] [6] [7] [8] [9]                [15][16][17][18][19]
     //
-              bigBlockIdx                = static_cast<int>(idx / bigBlockSize);
-    const int smallBlock_in_bigBlock_num = bigBlockIdx * smallBlock_per_bigBlock;
-    const int lastSmallBlockNum          = static_cast<int>((idx - (bigBlockSize * bigBlockIdx)) / smallBlockSize);
-              smallBlockIdx              = smallBlock_in_bigBlock_num + lastSmallBlockNum;
+               bigBlockIdx                = static_cast<SIZE_T>(idx / bigBlockSize);
+    const auto smallBlock_in_bigBlock_num = bigBlockIdx * smallBlock_per_bigBlock;
+    const auto lastSmallBlockNum          = static_cast<SIZE_T>((idx - (bigBlockSize * bigBlockIdx)) / smallBlockSize);
+               smallBlockIdx              = smallBlock_in_bigBlock_num + lastSmallBlockNum;
 }
 
 FullyIndexableDictionary::FullyIndexableDictionary(const std::vector<BIT_CONTAINER_TYPE>& b) : bits(b) {
-    const int intBitsLength  = sizeof(BIT_CONTAINER_TYPE) * 8;
-    const int vectorSize     = bits.size();
-    bitsLength               = intBitsLength * vectorSize;
+    const SIZE_T intBitsLength  = sizeof(BIT_CONTAINER_TYPE) * 8;
+    const auto vectorSize       = bits.size();
+    bitsLength                  = intBitsLength * vectorSize;
     std::cout << "bitLength     : " << bitsLength     << std::endl;
-    const int log2BitsLength = static_cast<int>(std::log(bitsLength) / std::log(2));
-    bigBlockSize             = std::pow(log2BitsLength, 2);
+    const auto log2BitsLength   = static_cast<SIZE_T>(std::log(bitsLength) / std::log(2));
+    bigBlockSize                = std::pow(log2BitsLength, 2);
     std::cout << "bigBlockSize  : " << bigBlockSize   << std::endl;
-    smallBlockSize           = log2BitsLength / 2;
+    smallBlockSize              = log2BitsLength / 2;
     std::cout << "smallBlockSize: " << smallBlockSize << std::endl;
-    smallBlock_per_bigBlock  = 1 + static_cast<int>(bigBlockSize / smallBlockSize);
+    smallBlock_per_bigBlock     = 1 + static_cast<SIZE_T>(bigBlockSize / smallBlockSize);
     std::cout << "Small / Big   : " << smallBlock_per_bigBlock << std::endl;
-    int bigBlockIdx;
-    int smallBlockIdx;
+    SIZE_T bigBlockIdx;
+    SIZE_T smallBlockIdx;
     blockIdx(
         bitsLength,
         bigBlockSize,
@@ -146,8 +144,8 @@ FullyIndexableDictionary::FullyIndexableDictionary(const std::vector<BIT_CONTAIN
         smallBlock_per_bigBlock,
         bigBlockIdx,
         smallBlockIdx);
-    const int bigBlockNum    = bigBlockIdx + 1;
-    const int smallBlockNum  = smallBlockIdx + 1;
+    const auto bigBlockNum    = bigBlockIdx + 1;
+    const auto smallBlockNum  = smallBlockIdx + 1;
     bigBlockArray  .resize(bigBlockNum);
     std::cout << "bigBlockNum   : " << bigBlockNum    << std::endl;
     smallBlockArray.resize(smallBlockNum);
@@ -171,24 +169,22 @@ FullyIndexableDictionary::FullyIndexableDictionary(const std::vector<BIT_CONTAIN
             tailTable);
 }
 
-int getTail(
+SIZE_T getTail(
         const std::vector<BIT_CONTAINER_TYPE>& bits,
-        const int begin,
-        const int end) {
-    const int containerSize = sizeof(BIT_CONTAINER_TYPE) * 8;
-    const int maxBitIdx     = containerSize - 1;
-    const int beginContainerIdx = begin / containerSize;
-    const int beginBitIdx       = begin - beginContainerIdx * containerSize;
-    const int endContainerIdx   = end   / containerSize;
-    const int endBitIdx         = end - endContainerIdx * containerSize;
-    BIT_CONTAINER_TYPE tmp  = bits[beginContainerIdx];
-    for(int i = 0; i < beginBitIdx; ++i) {
-        tmp <<= 1;
-    }
-    const BIT_CONTAINER_TYPE mask = (1 << maxBitIdx);
-    int tail = 0;
+        const SIZE_T begin,
+        const SIZE_T end) {
+    const SIZE_T containerSize = sizeof(BIT_CONTAINER_TYPE) * 8;
+    const auto maxBitIdx     = containerSize - 1;
+    const auto beginContainerIdx = begin / containerSize;
+    const auto beginBitIdx       = begin - beginContainerIdx * containerSize;
+    const auto endContainerIdx   = end   / containerSize;
+    const auto endBitIdx         = end - endContainerIdx * containerSize;
+    auto tmp = bits[beginContainerIdx];
+    tmp <<= beginBitIdx;
+    const BIT_CONTAINER_TYPE mask = (1U << maxBitIdx);
+    auto tail = 0U;
     for(
-            int containerIdx = beginContainerIdx, bitIdx = beginBitIdx;
+            SIZE_T containerIdx = beginContainerIdx, bitIdx = beginBitIdx;
             (containerIdx != endContainerIdx) || (bitIdx != endBitIdx);
             ) {
         tail <<= 1;
@@ -210,12 +206,12 @@ int getTail(
     return tail;
 }
 
-int FullyIndexableDictionary::rank(const int idx) const {
+SIZE_T FullyIndexableDictionary::rank(const SIZE_T idx) const {
     if(idx > bitsLength) {
         return -1;
     } else {
-        int bigBlockIdx;
-        int smallBlockIdx;
+        SIZE_T bigBlockIdx;
+        SIZE_T smallBlockIdx;
         blockIdx(
                 idx,
                 bigBlockSize,
@@ -223,12 +219,12 @@ int FullyIndexableDictionary::rank(const int idx) const {
                 smallBlock_per_bigBlock,
                 bigBlockIdx,
                 smallBlockIdx);
-        const int lastBlockIdx = (bigBlockIdx * bigBlockSize) + ((smallBlockIdx - (bigBlockIdx * smallBlock_per_bigBlock)) * smallBlockSize);
-        int out = bigBlockArray[bigBlockIdx] + smallBlockArray[smallBlockIdx];
+        const auto lastBlockIdx = (bigBlockIdx * bigBlockSize) + ((smallBlockIdx - (bigBlockIdx * smallBlock_per_bigBlock)) * smallBlockSize);
+        SIZE_T out = bigBlockArray[bigBlockIdx] + smallBlockArray[smallBlockIdx];
         if(lastBlockIdx == idx) {
             return out;
         } else {
-            const int tail = getTail(
+            const auto tail = getTail(
                     bits,
                     lastBlockIdx,
                     idx);
@@ -237,17 +233,17 @@ int FullyIndexableDictionary::rank(const int idx) const {
     }
 }
 
-int FullyIndexableDictionary::select(const int num) const {
-    int begin = 0;
-    int end   = bigBlockArray.size();
+SIZE_T FullyIndexableDictionary::select(const SIZE_T num) const {
+    auto begin = 0U;
+    auto end   = bigBlockArray.size();
     //std::cout << "Selecting big block." << std::endl;
     while((end - begin) > 1) {
-        const int mid = (begin + end) / 2;
-        const int val = bigBlockArray[mid];
+        const auto mid = (begin + end) / 2;
+        const auto val = bigBlockArray[mid];
         if(val > num) {
             end = mid;
         } else if(val == num) {
-            int idx = bigBlockSize * mid;
+            auto idx = bigBlockSize * mid;
             while(rank(idx) == num) {
                 --idx;
             }
@@ -257,23 +253,23 @@ int FullyIndexableDictionary::select(const int num) const {
         }
         //std::cout << begin << "~" << end << std::endl;
     }
-    const int bigBlockIdx = begin;
-    int newNum = num - bigBlockArray[begin];
+    const auto bigBlockIdx = begin;
+    auto newNum = num - bigBlockArray[begin];
     begin *= smallBlock_per_bigBlock;
     end   *= smallBlock_per_bigBlock;
-    const int smallBlockNum = smallBlockArray.size();
+    const auto smallBlockNum = smallBlockArray.size();
     if(end > smallBlockNum) {
         end = smallBlockNum;
     }
-    const int smallBlockBaseIdx = begin;
+    const auto smallBlockBaseIdx = begin;
     //std::cout << "Selecting small block." << std::endl;
     while((end - begin) > 1) {
-        const int mid = (begin + end) / 2;
-        const int val = smallBlockArray[mid];
+        const auto mid = (begin + end) / 2U;
+        const auto val = smallBlockArray[mid];
         if(val > newNum) {
             end = mid;
         } else if(val == newNum) {
-            int idx = bigBlockSize * bigBlockIdx + (mid - smallBlockBaseIdx) * smallBlockSize;
+            auto idx = bigBlockSize * bigBlockIdx + (mid - smallBlockBaseIdx) * smallBlockSize;
             while(rank(idx) == num) {
                 --idx;
             }
@@ -284,13 +280,14 @@ int FullyIndexableDictionary::select(const int num) const {
         //std::cout << begin << "~" << end << std::endl;
     }
     newNum -= smallBlockArray[begin];
-    int idx1 = bigBlockSize * bigBlockIdx + (begin - smallBlockBaseIdx) * smallBlockSize;
-    int idx2 = idx1 + 1;
-    while(tailTable[getTail(bits, idx1, idx2)] != newNum) {
-        ++idx2;
+    auto idx1 = bigBlockSize * bigBlockIdx + (begin - smallBlockBaseIdx) * smallBlockSize;
+    auto idx2 = idx1;
+    do {
+        //std::cout << idx1 << "," << idx2 << std::endl;
         if(idx2 == bitsLength) {
             return -1;
         }
-    }
+        ++idx2;
+    } while(tailTable[getTail(bits, idx1, idx2)] != newNum);
     return idx2;
 }

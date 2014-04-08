@@ -1,25 +1,23 @@
-#ifndef FULLY_INDEXABLE_DICTIONARY_HPP_
-#define FULLY_INDEXABLE_DICTIONARY_HPP_
+#pragma once
 
 #include <vector>
 
-typedef int BIT_CONTAINER_TYPE;
-typedef char SMALL_BLOCK_RECORD_TYPE;
-typedef char TAIL_TABLE_RECORD_TYPE;
+typedef unsigned int SIZE_T;
+typedef unsigned int BIT_CONTAINER_TYPE;
+typedef unsigned char SMALL_BLOCK_RECORD_TYPE;
+typedef unsigned char TAIL_TABLE_RECORD_TYPE;
 
 class FullyIndexableDictionary {
     const std::vector<BIT_CONTAINER_TYPE> bits;
-    int bitsLength;
-    int bigBlockSize;
-    int smallBlockSize;
-    int smallBlock_per_bigBlock;
-    std::vector<int> bigBlockArray;
+    SIZE_T bitsLength;
+    SIZE_T bigBlockSize;
+    SIZE_T smallBlockSize;
+    SIZE_T smallBlock_per_bigBlock;
+    std::vector<SIZE_T> bigBlockArray;
     std::vector<SMALL_BLOCK_RECORD_TYPE> smallBlockArray;
     std::vector<TAIL_TABLE_RECORD_TYPE> tailTable;
 public:
     FullyIndexableDictionary(const std::vector<BIT_CONTAINER_TYPE>& b);
-    int rank(const int idx) const;
-    int select(const int num) const;
+    SIZE_T rank(const SIZE_T idx) const;
+    SIZE_T select(const SIZE_T num) const;
 };
-
-#endif
