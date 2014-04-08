@@ -1,8 +1,5 @@
-#ifndef ENCODING_HPP_
-#define ENCODING_HPP_
+#pragma once
 
 #include <string>
 
-std::pair<std::string, int> encoding(const std::string& origin);
-
-#endif
+std::pair<std::string, std::size_t> encoding(const std::string& origin);

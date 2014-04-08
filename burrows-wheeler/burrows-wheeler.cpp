@@ -8,7 +8,7 @@ int main() {
     const std::string origin = "cacao";
     std::cout << "Original string: " << origin << std::endl << std::endl;
 
-    std::pair<std::string, int> burrowsWheelerSeries = encoding(origin);
+    const auto burrowsWheelerSeries = encoding(origin);
 
     decoding(burrowsWheelerSeries);
 

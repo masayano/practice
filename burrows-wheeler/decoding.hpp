@@ -1,8 +1,5 @@
-#ifndef DECODING_HPP_
-#define DECODING_HPP_
+#pragma once
 
 #include <string>
 
-void decoding(const std::pair<std::string, int>& burrowsWheelerSeries);
-
-#endif
+void decoding(const std::pair<std::string, std::size_t>& burrowsWheelerSeries);

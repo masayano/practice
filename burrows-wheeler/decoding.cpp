@@ -4,23 +4,22 @@
 #include <iostream>
 #include <vector>
 
-void printDecodingVector(const std::vector<std::pair<char, int> >& decodingVector) {
-    const int length = decodingVector.size();
-    for(int i = 0; i < length; ++i) {
+void printDecodingVector(const std::vector<std::pair<char, std::size_t> >& decodingVector) {
+    for(const auto& decodingPair : decodingVector) {
         std::cout
-                << decodingVector[i].second
+                << decodingPair.second
                 << " - "
-                << decodingVector[i].first
+                << decodingPair.first
                 << std::endl;
     }
     std::cout << std::endl;
 }
 
-void decoding(const std::pair<std::string, int>& burrowsWheelerSeries) {
-    const std::string& bwstring = burrowsWheelerSeries.first;
-    const int length = bwstring.size();
-    std::vector<std::pair<char, int> > decodingVector;
-    for(int i = 0; i < length; ++i) {
+void decoding(const std::pair<std::string, std::size_t>& burrowsWheelerSeries) {
+    const auto& bwstring = burrowsWheelerSeries.first;
+    const auto length = bwstring.size();
+    std::vector<std::pair<char, std::size_t> > decodingVector;
+    for(auto i = 0U; i < length; ++i) {
         decodingVector.push_back(std::make_pair(bwstring[i], i));
     }
     std::cout << "Decoding vector:" << std::endl;
@@ -31,8 +30,8 @@ void decoding(const std::pair<std::string, int>& burrowsWheelerSeries) {
     printDecodingVector(decodingVector);
 
     std::cout << "decoding:" << std::endl;
-    int start = burrowsWheelerSeries.second;
-    for(int i = 0; i < length; ++i) {
+    auto start = burrowsWheelerSeries.second;
+    for(auto i = 0U; i < length; ++i) {
         std::cout << decodingVector[start].first << "(" << start << ")" << std::endl;
         start = decodingVector[start].second;
     }
