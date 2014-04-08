@@ -9,7 +9,7 @@ KahanSummationAlgorithm: $(OBJS)
 	$(CC) -o $@ $(OBJS) $(LIBS)
 
 .c.o:
-	$(CC) -c $<
+	$(CC) $(CPPFLAGS) -c $<
 
 KahanSummationAlgorithm.o: KahanSummationAlgorithm.cpp
 
