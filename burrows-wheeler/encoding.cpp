@@ -39,7 +39,7 @@ std::pair<std::string, std::size_t> encoding(const std::string& origin) {
     printCirculantMatrix(circulantMatrix);
     std::cout << std::endl;
 
-    std::sort(circulantMatrix.begin(), circulantMatrix.end());
+    std::sort(begin(circulantMatrix), end(circulantMatrix));
     std::cout << "Sorted circulant matrix:" << std::endl;
     printCirculantMatrix(circulantMatrix);
     std::cout << std::endl;

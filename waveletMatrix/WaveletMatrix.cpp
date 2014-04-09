@@ -56,11 +56,11 @@ void createStartIdxList(
         std::map<SIZE_T, SIZE_T>& startIdxList) {
     auto oldNum = array[0];
     VALUE newNum;
-    startIdxList.insert(std::make_pair(oldNum, 0));
+    startIdxList.emplace(std::make_pair(oldNum, 0));
     for(auto i = 1U; i < length; ++i) {
         newNum = array[i];
         if(oldNum != newNum) {
-            startIdxList.insert(std::make_pair(newNum, i));
+            startIdxList.emplace(std::make_pair(newNum, i));
             oldNum = newNum;
         }
     }

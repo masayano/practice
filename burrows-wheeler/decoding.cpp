@@ -25,7 +25,7 @@ void decoding(const std::pair<std::string, std::size_t>& burrowsWheelerSeries) {
     std::cout << "Decoding vector:" << std::endl;
     printDecodingVector(decodingVector);
 
-    std::sort(decodingVector.begin(), decodingVector.end());
+    std::sort(begin(decodingVector), end(decodingVector));
     std::cout << "Sorted decoding vector:" << std::endl;
     printDecodingVector(decodingVector);
 
